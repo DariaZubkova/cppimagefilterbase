@@ -25,6 +25,7 @@ public:
     png_toolkit();
     ~png_toolkit();
     bool load( std::string const &pictureName );
+	void edit_image();
     bool save( std::string const &pictureName );
     image_data getPixelData( void ) const;
 
