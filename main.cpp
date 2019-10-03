@@ -12,6 +12,7 @@ int main( int argc, char *argv[] )
 
         png_toolkit studTool;
         studTool.load(argv[1]);
+		studTool.edit_image();
         studTool.save(argv[2]);
 
     }
