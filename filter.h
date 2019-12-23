@@ -1,7 +1,7 @@
 #pragma once
 #include "png_toolkit.h"
 #include <vector>
-#include <array>
+#include <algorithm>
 #include "parseconfig.h"
 
 class Filter {
