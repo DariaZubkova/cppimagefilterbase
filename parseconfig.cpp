@@ -1,4 +1,7 @@
 #include "parseconfig.h"
+#include <cstring>
+#include <string>
+#include <vector>
 
 vector<configData> ParseConfig::readConfig(string configFile) {
 	vector<configData> data;
@@ -8,7 +11,6 @@ vector<configData> ParseConfig::readConfig(string configFile) {
 	{
 		file.getline(str, 256);
 		char* pch = strtok(str, " ");
-
 		int flag = 0, maxFlag = 5;
 		configData cnf;
 		while (pch != NULL)
