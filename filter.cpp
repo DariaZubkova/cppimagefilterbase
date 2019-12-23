@@ -53,8 +53,8 @@ void Filter::filterBW(int hStart, int hFinish, int startWidth, int finishWidth, 
 
 Red::Red(vector<int> coordinates, image_data& imgData) {
 	hStart = calculateHeightStart(coordinates[0], imgData);
-	hFinish = calculateHeightFinish(coordinates[1], imgData);
-	startWidth = calculateWidthStart(coordinates[2], imgData);
+	startWidth = calculateWidthStart(coordinates[1], imgData);
+	hFinish = calculateHeightFinish(coordinates[2], imgData);
 	finishWidth = calculateWidthFinish(coordinates[3], imgData);
 	sizeString = calculateLenghtString(imgData);
 }
@@ -74,8 +74,8 @@ void Red::red_filter(image_data& imgData) {
 
 Threshold::Threshold(vector<int> coordinates, image_data& imgData) {
 	hStart = calculateHeightStart(coordinates[0], imgData);
-	hFinish = calculateHeightFinish(coordinates[1], imgData);
-	startWidth = calculateWidthStart(coordinates[2], imgData);
+	startWidth = calculateWidthStart(coordinates[1], imgData);
+	hFinish = calculateHeightFinish(coordinates[2], imgData);
 	finishWidth = calculateWidthFinish(coordinates[3], imgData);
 	sizeString = calculateLenghtString(imgData);
 }
@@ -126,8 +126,8 @@ void Threshold::threshold_filter(image_data& imgData) {
 
 Blur::Blur(vector<int> coordinates, image_data& imgData) {
 	hStart = calculateHeightStart(coordinates[0], imgData);
-	hFinish = calculateHeightFinish(coordinates[1], imgData);
-	startWidth = calculateWidthStart(coordinates[2], imgData);
+	startWidth = calculateWidthStart(coordinates[1], imgData);
+	hFinish = calculateHeightFinish(coordinates[2], imgData);
 	finishWidth = calculateWidthFinish(coordinates[3], imgData);
 	sizeString = calculateLenghtString(imgData);
 }
@@ -179,8 +179,8 @@ void Blur::blur_filter(image_data& imgData) {
 
 Edge::Edge(vector<int> coordinates, image_data& imgData) {
 	hStart = calculateHeightStart(coordinates[0], imgData);
-	hFinish = calculateHeightFinish(coordinates[1], imgData);
-	startWidth = calculateWidthStart(coordinates[2], imgData);
+	startWidth = calculateWidthStart(coordinates[1], imgData);
+	hFinish = calculateHeightFinish(coordinates[2], imgData);
 	finishWidth = calculateWidthFinish(coordinates[3], imgData);
 	sizeString = calculateLenghtString(imgData);
 }
