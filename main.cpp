@@ -1,10 +1,8 @@
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
 #include "png_toolkit.h"
 #include "filter.h"
 #include "parseconfig.h"
+#include <vector>
 
 int main( int argc, char *argv[] )
 {
@@ -23,9 +21,7 @@ int main( int argc, char *argv[] )
 		image_data imgData = studTool.getPixelData();
 		Filters filters;
 		for (auto elem : data)
-			filters.doFilter(elem, imgData);
-
-		
+			filters.doFilter(elem, imgData);		
         studTool.save(argv[3]);
 
     }
