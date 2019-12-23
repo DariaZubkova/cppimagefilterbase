@@ -1,4 +1,6 @@
 #include "filter.h"
+#include <vector>
+#include <algorithm>
 
 int Filter::calculateHeightStart(int up, image_data& imgData) {
 	int hStart;
@@ -114,8 +116,8 @@ void Threshold::threshold_filter(image_data& imgData) {
 				for (int k = 0; k < imgData.compPerPixel; k++) {
 					imgData.pixels[k + i * sizeString + j] = (unsigned char)0;
 				}
-				numColor++;
 			}
+			numColor++;
 		}
 	}
 
