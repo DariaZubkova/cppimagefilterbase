@@ -35,6 +35,7 @@ class Blur : protected Filter {
 public:
 	Blur(vector<int> coordinates, image_data& imgData);
 	void blur_filter(image_data& imgData);
+	vector<int> filterExtraBlur(image_data& imgData, vector<int>matrixCoordinates);
 private:
 	vector<int> posPicture;
 };
@@ -43,6 +44,7 @@ class Edge : protected Filter {
 public:
 	Edge(vector<int> coordinates, image_data& imgData);
 	void edge_filter(image_data& imgData);
+	int filterExtraEdge(image_data& imgData, vector<int>matrixCoordinates);
 private:
 	vector<int> posPicture;
 };
