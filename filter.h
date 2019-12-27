@@ -10,8 +10,8 @@ protected:
 	int calculateHeightFinish(int down, image_data& imgData);
 	int calculateWidthStart(int left, image_data& imgData);
 	int calculateWidthFinish(int right, image_data& imgData);
-	int calculateLenghtString(image_data& imgData);
-	void filterBW(int hStart, int hFinish, int startWidth, int finishWidth, int sizeString, image_data& imgData);
+	//int calculateLenghtString(image_data& imgData);
+	void filterBW(vector<int> coordinates, image_data& imgData);
 };
 
 class Red : protected Filter {
@@ -19,23 +19,16 @@ public:
 	Red(vector<int> coordinates, image_data& imgData);
 	void red_filter(image_data& imgData);
 private:
-	int hStart;
-	int hFinish;
-	int startWidth;
-	int finishWidth;
-	int sizeString;
+	vector<int> posPicture;
 };
 
 class Threshold : protected Filter {
 public:
 	Threshold(vector<int> coordinates, image_data& imgData);
 	void threshold_filter(image_data& imgData);
+	int middleFilter(image_data& imgData, vector<int>matrixCoordinates);
 private:
-	int hStart;
-	int hFinish;
-	int startWidth;
-	int finishWidth;
-	int sizeString;
+	vector<int> posPicture;
 };
 
 class Blur : protected Filter {
@@ -43,11 +36,7 @@ public:
 	Blur(vector<int> coordinates, image_data& imgData);
 	void blur_filter(image_data& imgData);
 private:
-	int hStart;
-	int hFinish;
-	int startWidth;
-	int finishWidth;
-	int sizeString;
+	vector<int> posPicture;
 };
 
 class Edge : protected Filter {
@@ -55,11 +44,7 @@ public:
 	Edge(vector<int> coordinates, image_data& imgData);
 	void edge_filter(image_data& imgData);
 private:
-	int hStart;
-	int hFinish;
-	int startWidth;
-	int finishWidth;
-	int sizeString;
+	vector<int> posPicture;
 };
 
 class Filters {
