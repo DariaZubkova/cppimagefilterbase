@@ -145,6 +145,38 @@ int Threshold::middleFilter(image_data& imgData, vector<int>matrixCoordinates) {
 	return middleElem;
 }
 
+void Threshold::threshold_filter(image_data& imgData) {
+	std::vector<int> matrixCoordinates;
+	int middleElem = 0;
+
+	filterBW(posPicture, imgData);
+
+	image_data copyData;
+	copyData.compPerPixel = imgData.compPerPixel;
+	copyData.h = imgData.h;
+	copyData.w = imgData.w;
+	int size = copyData.w * copyData.h * copyData.compPerPixel;
+	copyData.pixels = new stbi_uc[size];
+	memcpy(copyData.pixels, imgData.pixels, size);
+
+	for (int i = posPicture[0]; i < posPicture[2]; i++) {
+		for (int j = posPicture[1]; j < posPicture[3]; j++) {
+			int pos = (i * imgData.w + j) * imgData.compPerPixel;
+			matrixCoordinates.push_back(i - 2);
+			matrixCoordinates.push_back(j - 2);
+			matrixCoordinates.push_back(i + 2);
+			matrixCoordinates.push_back(j + 2);
+			middleElem = middleFilter(copyData, matrixCoordinates);
+			if (imgData.pixels[pos] < middleElem) {
+				for (int k = 0; k < 3; k++) {
+					imgData.pixels[k + pos] = (unsigned char)0;
+				}
+			}
+			matrixCoordinates.clear();
+		}
+	}
+	delete[] copyData.pixels;
+}
 /*void Threshold::threshold_filter(image_data& imgData) {
 	std::vector<int> matrixCoordinates;
 	int middleElem = 0;
@@ -175,13 +207,20 @@ int Threshold::middleFilter(image_data& imgData, vector<int>matrixCoordinates) {
 	}
 
 }*/
-
-void Threshold::threshold_filter(image_data& imgData) {
+/*void Threshold::threshold_filter(image_data& imgData) {
 	std::vector<int> matrixCoordinates;
 	std::vector<int> middle;
 	int middleElem = 0;
 
 	filterBW(posPicture, imgData);
+
+	image_data saveImg;
+	saveImg.compPerPixel = imgData.compPerPixel;
+	saveImg.h = imgData.h;
+	saveImg.w = imgData.w;
+	int size = saveImg.h * saveImg.w * saveImg.compPerPixel;
+	saveImg.pixels = new stbi_uc[size];
+	memcpy(saveImg.pixels, imgData.pixels, size);
 
 	for (int i = posPicture[0]; i < posPicture[2]; i++) {
 		for (int j = posPicture[1]; j < posPicture[3]; j++) {
@@ -209,7 +248,7 @@ void Threshold::threshold_filter(image_data& imgData) {
 	}
 	middle.clear();
 
-}
+}*/
 
 Blur::Blur(vector<int> coordinates, image_data& imgData) {
 	posPicture.push_back(calculateHeightStart(coordinates[0], imgData));
@@ -218,7 +257,63 @@ Blur::Blur(vector<int> coordinates, image_data& imgData) {
 	posPicture.push_back(calculateWidthFinish(coordinates[3], imgData));
 }
 
+vector<int> Blur::filterExtraBlur(image_data& imgData, vector<int>matrixCoordinates) {
+	int sumR = 0, sumG = 0, sumB = 0;
+	vector<int> sum;
+	for (int k = matrixCoordinates[0]; k <= matrixCoordinates[2]; k++) {
+		if (k >= posPicture[0] && k < posPicture[2]) {
+			for (int l = matrixCoordinates[1]; l <= matrixCoordinates[3]; l++) {
+				if (l >= posPicture[1] && l < posPicture[3]) {
+					int pos = (k * imgData.w + l) * imgData.compPerPixel;
+					sumR += imgData.pixels[pos];
+					sumG += imgData.pixels[pos + 1];
+					sumB += imgData.pixels[pos + 2];
+				}
+			}
+		}
+	}
+	//изменять
+	sumR = sumR / 9;
+	sumG = sumG / 9;
+	sumB = sumB / 9;
+	sum.push_back(sumR);
+	sum.push_back(sumG);
+	sum.push_back(sumB);
+	return sum;
+}
+
 void Blur::blur_filter(image_data& imgData) {
+	std::vector<int> sum;
+	std::vector<int> matrixCoordinates;
+
+	image_data copyData;
+	copyData.compPerPixel = imgData.compPerPixel;
+	copyData.h = imgData.h;
+	copyData.w = imgData.w;
+	int size = copyData.w * copyData.h * copyData.compPerPixel;
+	copyData.pixels = new stbi_uc[size];
+	memcpy(copyData.pixels, imgData.pixels, size);
+
+	for (int i = posPicture[0]; i < posPicture[2]; i++) {
+		for (int j = posPicture[1]; j < posPicture[3]; j++) {
+			int pos = (i * imgData.w + j) * imgData.compPerPixel;
+			matrixCoordinates.push_back(i - 1);
+			matrixCoordinates.push_back(j - 1);
+			matrixCoordinates.push_back(i + 1);
+			matrixCoordinates.push_back(j + 1);
+			sum = filterExtraBlur(copyData, matrixCoordinates);
+			for (int k = 0; k < 3; k++) {
+				imgData.pixels[k + pos] = sum[k];
+			}
+			sum.clear();
+			matrixCoordinates.clear();
+		}
+	}
+
+	delete[] copyData.pixels;
+}
+
+/*void Blur::blur_filter(image_data& imgData) {
 	int sumR = 0, sumG = 0, sumB = 0;
 	std::vector<int> sum;
 
@@ -263,7 +358,7 @@ void Blur::blur_filter(image_data& imgData) {
 	}
 
 	sum.clear();
-}
+}*/
 
 Edge::Edge(vector<int> coordinates, image_data& imgData) {
 	posPicture.push_back(calculateHeightStart(coordinates[0], imgData));
@@ -272,56 +367,65 @@ Edge::Edge(vector<int> coordinates, image_data& imgData) {
 	posPicture.push_back(calculateWidthFinish(coordinates[3], imgData));
 }
 
-void Edge::edge_filter(image_data& imgData) {
+int Edge::filterExtraEdge(image_data& imgData, vector<int>matrixCoordinates) {
 	int sumPixel = 0;
-	std::vector<int> sum;
+	int middleMatrix = 0;
+	for (int k = matrixCoordinates[0]; k <= matrixCoordinates[2]; k++) {
+		if (k >= posPicture[0] && k < posPicture[2]) {
+			for (int l = matrixCoordinates[1]; l <= matrixCoordinates[3]; l++) {
+				if (l >= posPicture[1]  && l < posPicture[3]) {
+					int pos = (k * imgData.w + l) * imgData.compPerPixel;
+					if (middleMatrix == 9 / 2) {
+						sumPixel += 9 * imgData.pixels[pos];
+					}
+					else {
+						sumPixel -= imgData.pixels[pos];
+					}
+				}
+				middleMatrix++;
+			}
+		}
+		else
+			middleMatrix += 3;
+
+	}
+	if (sumPixel < 0)
+		sumPixel = 0;
+	if (sumPixel > 255)
+		sumPixel = 255;
+	return sumPixel;
+}
+
+void Edge::edge_filter(image_data& imgData) {
+	std::vector<int> matrixCoordinates;
+	int sumPixel = 0;
 
 	filterBW(posPicture, imgData);
 
-	for (int i = posPicture[0]; i < posPicture[2]; i++) {
-		for (int j = posPicture[1]; j < posPicture[3]; j++) {
-			int newI = i - 1, newJ = j - 1;
-			int endI = newI + 3, endJ = newJ + 3;
-			for (int k = newI; k < endI; k++) {
-				if (k >= posPicture[0] && k < posPicture[2]) {
-					for (int l = newJ; l < endJ; l++) {
-						if (l >= posPicture[1] && l < posPicture[3]) {
-							int pos = (k * imgData.w + l) * imgData.compPerPixel;
-							if (k == i && l == j) {
-								sumPixel += 9 * imgData.pixels[pos];
-							}
-							else {
-								sumPixel += (-1) * imgData.pixels[pos];
-							}
-						}
-					}
-				}
-			}
-			//изменять
-			//sumPixel = sumPixel / 9;
-			if (sumPixel < 0)
-				sumPixel = 0;
-			if (sumPixel > 255)
-				sumPixel = 255;
-			sum.push_back(sumPixel);
+	image_data copyData;
+	copyData.compPerPixel = imgData.compPerPixel;
+	copyData.h = imgData.h;
+	copyData.w = imgData.w;
+	int size = copyData.w * copyData.h * copyData.compPerPixel;
+	copyData.pixels = new stbi_uc[size];
+	memcpy(copyData.pixels, imgData.pixels, size);
 
-			sumPixel = 0;
-
-		}
-	}
-
-	int numColor = 0;
 	for (int i = posPicture[0]; i < posPicture[2]; i++) {
 		for (int j = posPicture[1]; j < posPicture[3]; j++) {
 			int pos = (i * imgData.w + j) * imgData.compPerPixel;
+			matrixCoordinates.push_back(i - 1);
+			matrixCoordinates.push_back(j - 1);
+			matrixCoordinates.push_back(i + 1);
+			matrixCoordinates.push_back(j + 1);
+			sumPixel = filterExtraEdge(copyData, matrixCoordinates);
 			for (int k = 0; k < 3; k++) {
-				imgData.pixels[k + pos] = (unsigned char)sum[numColor];
+				imgData.pixels[k + pos] = sumPixel;
 			}
-			numColor++;
+			matrixCoordinates.clear();
 		}
 	}
 
-	sum.clear();
+	delete[] copyData.pixels;
 }
 
 void Filters::doFilter(configData data, image_data& imgData) {
