@@ -45,7 +45,7 @@ void Filter::filterBW(vector<int> coordinates, image_data& imgData) {
 			int r = imgData.pixels[pos];
 			int g = imgData.pixels[pos + 1];
 			int b = imgData.pixels[pos + 2];
-			int x = 0.3 * r + 0.6 * g + 0.1 * b;
+			int x = (3 * r + 6 * g + b) / 10;
 			for (int k = 0; k < 3; k++) {
 				imgData.pixels[pos + k] = (unsigned char)x;
 			}
